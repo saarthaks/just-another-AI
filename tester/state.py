@@ -11,7 +11,7 @@ class State(object):
 
     def load_allStates(self):
 
-        mods = ["email", "calendar", "music", "text", "alarm", "goal"]
+        mods = ["email", "calendar", "music", "text", "alarm", "nope"]
 
         for mod in mods:
             self.children.append(State(self, mod))
@@ -50,9 +50,8 @@ class State(object):
             resp = "Texting Mom on my way."
         elif name == "alarm":
             resp = "Setting alarm for 8 pm."
-        elif name == "goal":
-            resp = "end."
         else:
-            resp = "i didnt quite catch that."
+            resp = "Have a nice day sir."
+
 
         return resp.split()

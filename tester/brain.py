@@ -4,7 +4,6 @@ import yaml
 class Brain(object):
 
     def __init__(self, speaker, profile):
-
         self.speaker = speaker
         self.profile = profile
 
@@ -13,7 +12,13 @@ class Brain(object):
 
         if flag:
             flag = False
+            return (True, self.speaker.ask("Anything else?"))
+
+        if state.mod == "start":
             return (True, self.speaker.ask("What can I do for you?"))
+
+        if state.mod == "nope":
+            return ((True if self.speaker.ask("Will that be all?") == "yes" else False), None)
 
         count = state.counts
         if count > 10:
@@ -21,7 +26,7 @@ class Brain(object):
             if max is not None and max.get_probability > threshold:
                 return (False, response)
 
-        return (True, self.speaker.ask("What can I do for you?"))
+        return (True, self.speaker.ask("Anything else?"))
 
     def max_mod(self, state):
         return state.max_child()
@@ -38,39 +43,40 @@ class Brain(object):
         current_state.update_occurrences()
         response = texts
         flag = False
-        while current_state.mod != "goal":
-            while current_state.mod != "goal":
+        while current_state.mod != "nope":
 
-                if len(current_state.children) == 0:        #new leaf on tree
-                    print "Adding states..."
-                    current_state.load_allStates()
+            if len(current_state.children) == 0:
+                print "Adding new states... "
+                current_state.load_allStates()
 
-                ask, response = self.ask(current_state, response, flag)
-                if ask:
-                    for child in current_state.children:
-                        for text in response:
-                            if text == child.mod:
-                                response = child.handle(child.mod, response, self.profile)
-                                self.speaker.say(response)
-                                child.update_occurrences()
-                                current_state = child
-                else:
-                    child = self.max_mod(current_state)
+            ask, response = self.ask(current_state, response, flag)
+            if ask:
+                children = [child for child in current_state.children if child.mod in response]
+                if children:
+                    child = children[0]
                     response = child.handle(child.mod, response, self.profile)
                     self.speaker.say(response)
                     child.update_occurrences()
                     current_state = child
-
-            ask, response = self.ask(current_state, response, flag)
-            if ask:               #do you want to quit?
-                if "end" in response:
-                    self.update_personality_tree(root, profile)
-                    return
                 else:
-                    current_state.update_occurrences(True)
-                    current_state = current_state.backpointer
-                    flag = True
+                    self.speaker.say("Sorry, I can't do that")
+                    continue
             else:
-                self.update_personality_tree(root, profile)
-                return
+                child = self.max_mod(current_state)
+                if child.mod != "nope":
+                    response = child.handle(child.mod, response, self.profile)
+                    self.speaker.say(response)
+                    child.update_occurrences()
+                    current_state = child
+                else:
+                    if self.ask(child, response, flag):
+                        response = child.handle(child.mod, response, self.profile)
+                        self.speaker.say(response)
+                        child.update_occurrences()
+                        current_state = child
+                    else:
+                        flag = True
+                        continue
+        self.update_personality_tree(root, profile)
+        return
 
