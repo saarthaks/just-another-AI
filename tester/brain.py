@@ -43,7 +43,7 @@ class Brain(object):
         current_state.update_occurrences()
         response = texts
         flag = False
-        while current_state.mod != "nope":
+        while current_state.mod == "start" or current_state.mod.__name__ != "Goal":
 
             if len(current_state.children) == 0:
                 print "Adding new states... "
@@ -51,10 +51,11 @@ class Brain(object):
 
             ask, response = self.ask(current_state, response, flag)
             if ask:
-                children = [child for child in current_state.children if child.mod in response]
+                children = [child for child in current_state.children if child.mod.isValid(response)]
                 if children:
                     child = children[0]
-                    response = child.handle(child.mod, response, self.profile)
+                    print child.mod.__name__
+                    response = child.mod.handle(response, self.speaker, self.profile)
                     self.speaker.say(response)
                     child.update_occurrences()
                     current_state = child
@@ -63,14 +64,14 @@ class Brain(object):
                     continue
             else:
                 child = self.max_mod(current_state)
-                if child.mod != "nope":
-                    response = child.handle(child.mod, response, self.profile)
+                if child.mod.__name__ != "Goal":
+                    response = child.mod.handle(response, self.speaker, self.profile)
                     self.speaker.say(response)
                     child.update_occurrences()
                     current_state = child
                 else:
                     if self.ask(child, response, flag):
-                        response = child.handle(child.mod, response, self.profile)
+                        response = child.mod.handle(response, self.speaker, self.profile)
                         self.speaker.say(response)
                         child.update_occurrences()
                         current_state = child

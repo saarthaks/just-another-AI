@@ -1,5 +1,8 @@
 from __future__ import division
+import os
+import sys
 
+rootDir = "/Users/user/Projects/alfred/tester/modules/"
 
 class State(object):
 
@@ -10,9 +13,14 @@ class State(object):
         self.children = []
 
     def load_allStates(self):
+        mods = []
+        for dirName, subdirList, fileList in os.walk("./modules"):
+            for file in fileList:
+                file = file.split(".")
+                mods.append(file[0])
 
-        mods = ["email", "calendar", "music", "text", "alarm", "nope"]
-
+        sys.path.append(rootDir)
+        mods = map(__import__, mods)
         for mod in mods:
             self.children.append(State(self, mod))
         return
