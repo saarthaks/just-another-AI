@@ -17,8 +17,8 @@ class Brain(object):
         if state.mod == "start":
             return (True, self.speaker.ask("What can I do for you?"))
 
-        if state.mod == "nope":
-            return ((True if self.speaker.ask("Will that be all?") == "yes" else False), None)
+        if state.mod.__name__ == "Goal":
+            return ((self.speaker.ask("Will that be all?") == "yes"), None)
 
         count = state.counts
         if count > 10:
@@ -56,7 +56,6 @@ class Brain(object):
                     child = children[0]
                     print child.mod.__name__
                     response = child.mod.handle(response, self.speaker, self.profile)
-                    self.speaker.say(response)
                     child.update_occurrences()
                     current_state = child
                 else:
@@ -66,13 +65,11 @@ class Brain(object):
                 child = self.max_mod(current_state)
                 if child.mod.__name__ != "Goal":
                     response = child.mod.handle(response, self.speaker, self.profile)
-                    self.speaker.say(response)
                     child.update_occurrences()
                     current_state = child
                 else:
                     if self.ask(child, response, flag):
                         response = child.mod.handle(response, self.speaker, self.profile)
-                        self.speaker.say(response)
                         child.update_occurrences()
                         current_state = child
                     else:

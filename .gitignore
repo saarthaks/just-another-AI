@@ -1,3 +1,7 @@
 *.yml
+*.key
 test.py
+test2.py
+*.json
+keys.rtf
 *.pyc

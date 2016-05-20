@@ -1,7 +1,7 @@
-WORDS = ["text", "message"]
+action = "send.message"
 
 def isValid(text):
-    if [word for word in WORDS if word in text]:
+    if text['result']['action'] == action:
         return True
 
     return False

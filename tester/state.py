@@ -25,13 +25,9 @@ class State(object):
             self.children.append(State(self, mod))
         return
 
-    def update_occurrences(self, negate=False):
-        if negate:
-            self.counts -= 1
-            return
-        else:
-            self.counts += 1
-            return
+    def update_occurrences(self):
+        self.counts += 1
+        return
 
     def get_probability(self):
         ans = self.counts / self.backpointer.counts
