@@ -18,13 +18,11 @@ class Conversation(object):
             for notif in notifications:
                 self.speaker.say(notif)
 
-            text = raw_input("").split()
-            input = False
-            for word in text:
-                if self.persona == word:
-                    input = True
-                else:
-                    continue
+            threshold, transcribed = self.speaker.passiveListen(self.persona)
+            if not threshold or not transcribed:
+                continue
+
+            input = self.speaker.activeListenToAllOptions(threshold)
 
             if input:
-                self.brain.query(self.profile, text)
+                self.brain.query(self.profile, transcribed)

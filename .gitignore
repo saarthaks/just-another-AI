@@ -1,4 +1,5 @@
 *.yml
+profile_builder.py
 *.key
 test.py
 test2.py

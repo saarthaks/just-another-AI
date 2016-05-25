@@ -1,4 +1,6 @@
 import yaml
+from scipy.stats import chisquare
+import random as r
 
 
 class Brain(object):
@@ -12,24 +14,32 @@ class Brain(object):
 
         if flag:
             flag = False
-            return (True, self.speaker.ask("Anything else?"))
+            return (True, self.speaker.ask("Continuing Ask"))
 
         if state.mod == "start":
-            return (True, self.speaker.ask("What can I do for you?"))
+            return (True, self.speaker.ask("Initial Ask"))
 
         if state.mod.__name__ == "Goal":
-            return ((self.speaker.ask("Will that be all?") == "yes"), None)
+            resp = self.speaker.ask("Ending Ask")
+            if resp['result']['resolvedQuery'] == "yes":
+                return (True, None)
 
         count = state.counts
         if count > 10:
             max = state.max_child()
-            if max is not None and max.get_probability > threshold:
+            child_counts = [c.count for c in state.children]
+
+            if max is not None and (self.random_ask(child_counts) or max.get_probability() > threshold):
                 return (False, response)
 
-        return (True, self.speaker.ask("Anything else?"))
+        return (True, self.speaker.ask("Continuing Ask"))
 
-    def max_mod(self, state):
-        return state.max_child()
+    def random_ask(self, counts):
+        chi_val, p = chisquare(counts)
+        x = r.random()
+        if x > p:
+            return True
+        return False
 
     def update_personality_tree(self, root, profile):
         profile["personality"] = root
@@ -62,7 +72,7 @@ class Brain(object):
                     self.speaker.say("Sorry, I can't do that")
                     continue
             else:
-                child = self.max_mod(current_state)
+                child = current_state.max_child()
                 if child.mod.__name__ != "Goal":
                     response = child.mod.handle(response, self.speaker, self.profile)
                     child.update_occurrences()

@@ -2,6 +2,7 @@ import imaplib
 import email
 import re
 from dateutil import parser
+import datetime
 
 
 action = "read.email"
@@ -55,6 +56,19 @@ def isValid(text):
 
     return False
 
+def build_JSON(resp, code):
+    mes = {}
+    mes['id'] = "self-made"
+    mes['timestamp'] = str(datetime.datetime.utcnow().isoformat('T')) + 'Z'
+    mes['result'] = {}
+    mes['result']['source'] = "self"
+    mes['result']['resolvedQuery'] = resp
+    mes['status'] = {}
+    mes['status']['code'] = code
+    mes['status']['errorType'] = "success" if code==200 else "failure"
+
+    return mes
+
 def handle(text, speaker, profile):
     try:
         msgs = fetchUnreadEmails(profile, limit=5)
@@ -67,8 +81,8 @@ def handle(text, speaker, profile):
         senders = [getSender(e) for e in msgs]
     except imaplib.IMAP4.error:
         resp = "I'm sorry. I'm not authenticated to work with your Gmail."
-        speaker.say(resp.split())
-        return
+        speaker.say(resp)
+        return build_JSON(resp, 404)
 
     if not senders:
         resp = "You have no unread emails."
@@ -84,6 +98,6 @@ def handle(text, speaker, profile):
         else:
             resp += " from " + unique_senders[0]
 
-    speaker.say(resp.split())
-    return resp.split()
+    speaker.say(resp)
+    return build_JSON(resp, 200)
 

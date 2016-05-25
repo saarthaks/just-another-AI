@@ -77,6 +77,19 @@ def isValid(text):
 
 	return False
 
+def build_JSON(resp, code):
+	mes = {}
+	mes['id'] = "self-made"
+	mes['timestamp'] = str(datetime.datetime.utcnow().isoformat('T')) + 'Z'
+	mes['result'] = {}
+	mes['result']['source'] = "self"
+	mes['result']['resolvedQuery'] = resp
+	mes['status'] = {}
+	mes['status']['code'] = code
+	mes['status']['errorType'] = "success" if code==200 else "failure"
+
+	return mes
+
 def handle(text, speaker, profile):
 	credentials = get_credentials()
 
@@ -90,7 +103,7 @@ def handle(text, speaker, profile):
 	if not events:
 		resp = "No upcoming events found."
 		speaker.say(resp)
-		return resp.split()
+		return build_JSON(resp, 200)
 
 	resp = 'Here are the events you have. '
 	for e in events:
@@ -98,5 +111,5 @@ def handle(text, speaker, profile):
 		speaker.say(str)
 		resp += str
 
-	return resp.split()
+	return build_JSON(resp, 200)
 

@@ -20,6 +20,19 @@ def extractAlarmTime(text, speaker):
 
     return date_time
 
+def build_JSON(resp, code):
+    mes = {}
+    mes['id'] = "self-made"
+    mes['timestamp'] = str(dt.utcnow().isoformat('T')) + 'Z'
+    mes['result'] = {}
+    mes['result']['source'] = "self"
+    mes['result']['resolvedQuery'] = resp
+    mes['status'] = {}
+    mes['status']['code'] = code
+    mes['status']['errorType'] = "success" if code==200 else "failure"
+
+    return mes
+
 def handle(text, speaker, profile):
     date_time = extractAlarmTime(text, speaker)
 
@@ -33,5 +46,6 @@ def handle(text, speaker, profile):
     resp += " "
     resp += m
     resp += "."
-    return resp.split()
+    speaker.say(resp)
+    return build_JSON(resp, 200)
 
