@@ -1,8 +1,5 @@
 from __future__ import division
-import os
-import sys
 
-rootDir = "/Users/user/Projects/alfred/tester/modules/"
 
 class State(object):
 
@@ -13,21 +10,20 @@ class State(object):
         self.children = []
 
     def load_allStates(self):
-        mods = []
-        for dirName, subdirList, fileList in os.walk("./modules"):
-            for file in fileList:
-                file = file.split(".")
-                mods.append(file[0])
 
-        sys.path.append(rootDir)
-        mods = map(__import__, mods)
+        mods = ["email", "calendar", "music", "text", "alarm", "nope"]
+
         for mod in mods:
             self.children.append(State(self, mod))
         return
 
-    def update_occurrences(self):
-        self.counts += 1
-        return
+    def update_occurrences(self, negate=False):
+        if negate:
+            self.counts -= 1
+            return
+        else:
+            self.counts += 1
+            return
 
     def get_probability(self):
         ans = self.counts / self.backpointer.counts

@@ -1,6 +1,6 @@
 import yaml
-import profile_builder as builder
 from conversation import Conversation
+from state import State
 from speaker import Speaker
 
 
@@ -14,11 +14,9 @@ class Alfred_Core(object):
             self.person = yaml.load(infile)
         except IOError:
             outfile = open("/Users/user/Projects/alfred/tester/personality.yml", "w")
-            builder.add_personality_tree(self.person)
-            builder.add_gmail_login(self.person)
-            builder.add_spotify_login(self.person)
-            builder.stt_setup(self.person)
-            builder.tts_setup(self.person)
+            print "Writing new personality file ... "
+            root = State(1, "start")
+            self.person["personality"] = root
             yaml.dump(self.person, outfile, default_flow_style=False)
             outfile.close()
 
