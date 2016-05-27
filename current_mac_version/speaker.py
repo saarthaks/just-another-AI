@@ -49,7 +49,7 @@ class Speaker():
         f = wave.open(file_path, "rb")
 
         chunk = 1024
-        stream = self._audio.open(ormat = p.get_format_from_width(f.getsampwidth()),
+        stream = self._audio.open(format = self._audio.get_format_from_width(f.getsampwidth()),
                                   channels = f.getnchannels(),
                                   rate = f.getframerate(),
                                   output = True)
