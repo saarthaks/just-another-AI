@@ -54,4 +54,4 @@ class State(object):
             resp = "Have a nice day sir."
 
 
-        return resp.split()
+        return resp

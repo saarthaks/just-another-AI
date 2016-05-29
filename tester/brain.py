@@ -33,7 +33,7 @@ class Brain(object):
 
     def update_personality_tree(self, root, profile):
         profile["personality"] = root
-        outputFile = open("/Users/user/Projects/alfred/tester/personality.yml", "w")
+        outputFile = open("/home/pi/Projects/alfred/just-another-AI/tester/personality.yml", "w")
         yaml.dump(profile, outputFile, default_flow_style=False)
         outputFile.close()
 

@@ -9,11 +9,11 @@ class Alfred_Core(object):
         self.speaker = Speaker()
         self.person = {}
         try:
-            infile = open("/Users/user/Projects/alfred/tester/personality.yml", "r")
+            infile = open("/home/pi/Projects/alfred/just-another-AI/tester/personality.yml", "r")
             print "Reading personality file ... "
             self.person = yaml.load(infile)
         except IOError:
-            outfile = open("/Users/user/Projects/alfred/tester/personality.yml", "w")
+            outfile = open("/home/pi/Projects/alfred/just-another-AI/tester/personality.yml", "w")
             print "Writing new personality file ... "
             root = State(1, "start")
             self.person["personality"] = root
