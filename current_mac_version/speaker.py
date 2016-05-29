@@ -65,7 +65,7 @@ class Speaker():
         return
 
     def make_wav(self, text):
-        v = pyvona.create_voice()
+        v = pyvona.create_voice(self.tts_key, self.tts_secret)
         v.voice_name = self.voice
         v.codec = 'mp3'
         temp_path = "/Users/user/Projects/alfred/tester/response.mp3"
@@ -176,9 +176,9 @@ class Speaker():
         THRESHOLD_TIME = 1
 
         stream = self._audio.open(format=pyaudio.paInt16,
-                                  channel=1,
+                                  channels=1,
                                   rate=rate,
-                                  input=true,
+                                  input=True,
                                   frames_per_buffer=chunk)
         frames = []
 
@@ -210,9 +210,9 @@ class Speaker():
 
         stream = self._audio.open(format=pyaudio.paInt16,
                                   channels=1,
-                                  rate=RATE,
+                                  rate=self.ACTIVE_RATE,
                                   input=True,
-                                  frames_per_buffer=CHUNK)
+                                  frames_per_buffer=self.ACTIVE_CHUNK)
         ai = apiai.ApiAI(self.active_key)
         request = ai.voice_request()
         request.lang = 'en'
